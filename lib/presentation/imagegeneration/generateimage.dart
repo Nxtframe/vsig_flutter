@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vsig_flutter/presentation/imagegeneration/components/imagedialog.dart';
+import 'package:vsig_flutter/state/generateimageprovider.dart';
 import 'package:vsig_flutter/utils/responsivetextstyle.dart';
 
 class ImageGenerate extends StatefulWidget {
@@ -10,8 +12,12 @@ class ImageGenerate extends StatefulWidget {
 }
 
 class _ImageGenerateState extends State<ImageGenerate> {
-  final TextEditingController _textController = TextEditingController();
+  bool _isLoading = false; // Loading state
+  final TextEditingController _textController =
+      TextEditingController(); //Prompt
+  String _error = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form key
+  int _selectedNumber = 1; // No of images to generate
   @override
   Widget build(BuildContext context) {
     final responsivetextstyle = ResponsiveTextStyle(context);
@@ -21,6 +27,17 @@ class _ImageGenerateState extends State<ImageGenerate> {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
+          _error != ""
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _error,
+                    style: responsivetextstyle.getCustomTextStyle(
+                        fontSize: 14,
+                        color: const Color.fromARGB(255, 221, 43, 43)),
+                  ),
+                )
+              : const SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
@@ -48,10 +65,66 @@ class _ImageGenerateState extends State<ImageGenerate> {
               ),
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Choose no of Images:",
+                  style: responsivetextstyle.getCustomTextStyle(fontSize: 14)),
+              const SizedBox(
+                width: 20,
+              ),
+              DropdownButton<int>(
+                value: _selectedNumber,
+                style: const TextStyle(
+                  color: Colors.blue,
+                  fontSize: 16,
+                ),
+                dropdownColor: Colors
+                    .lightBlueAccent, // Background color of the dropdown menu
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.blue,
+                ),
+                underline: Container(
+                  height: 2,
+                  color: Colors.blue,
+                ),
+                items: [1, 2, 3, 4, 5].map<DropdownMenuItem<int>>((int value) {
+                  return DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(
+                      value.toString(),
+                      style: const TextStyle(
+                        color: Colors
+                            .black, // Color of the text inside the dropdown menu
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (int? newValue) {
+                  setState(() {
+                    _selectedNumber = newValue!;
+                  });
+                },
+              ),
+            ],
+          ),
           const SizedBox(height: 20),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: const Color.fromARGB(255, 21, 39, 202),
+              backgroundColor: Colors.white, // Text color
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
             onPressed: _generateImage,
-            child: const Text('Generate Image'),
+            child: _isLoading
+                ? const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  )
+                : const Text('Generate Image'),
           ),
           // const Spacer(),
           // Align(   //Tried to add a Rive animation but failed because the animation is not what I desired
@@ -75,19 +148,38 @@ class _ImageGenerateState extends State<ImageGenerate> {
   void _generateImage() async {
     if (_formKey.currentState!.validate()) {
       // If the form is valid, proceed to generate the image
+      final generateimageprovider = context.read<GenerateImageProvider>();
+      setState(() {
+        _isLoading = true; // Start loading
+        _error = "";
+      });
+      try {
+        final generatedimageurls = await generateimageprovider
+            .generateimage(
+                prompt: _textController.text,
+                numberofimages: _selectedNumber,
+                sizes: "1080x1980")
+            .then((value) => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return FullScreenImagePage(imageUrl: value);
+                  },
+                ))
+            .whenComplete(() {
+          setState(() {
+            _isLoading = false; // Stop loading after completion
+          });
+        });
 
-      String imageUrl =
-          'https://i.seadn.io/gae/2hDpuTi-0AMKvoZJGd-yKWvK4tKdQr_kLIpB_qSeMau2TNGCNidAosMEvrEXFO9G6tmlFlPQplpwiqirgrIPWnCKMvElaYgI-HiVvXc?auto=format&dpr=1&w=1000'; // Replace with actual image generation logic
-
-      // Now showing the dialog with the image
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return FullScreenImagePage(imageUrl: imageUrl);
-        },
-      );
-      // Your existing logic to show the image
+        // Your existing logic to show the image
+      } catch (e) {
+        setState(() {
+          _error =
+              "Please wait 1 min because of the rate limit of OpenAPI I can only generate 1-3 image per min";
+        });
+      }
     }
+
     // Here you would typically have your logic to generate an image based on the text.
     // For demonstration, let's just use a sample image URL.
   }

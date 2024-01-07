@@ -8,7 +8,7 @@ import 'package:vsig_flutter/network/network_services.dart/openai_image_generati
 
 class VsigClient {
   static final VsigClient instance = VsigClient._();
-  final String apikey = "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";
+  final String apikey = "sk-fDI0rTbi8hP4kvmU1j5QT3BlbkFJgl7TEmDqTm3tJEmd7I";
   late final ChopperClient client;
 
   VsigClient._() {

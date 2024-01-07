@@ -45,11 +45,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 NavigationButton(
                   iconPath: "assets/icons/image-generate.svg",
                   label: 'Generate',
+                  color: const Color.fromARGB(255, 21, 39, 202),
                   isSelected: _selectedIndex == 0,
                   onPressed: () => _onItemTapped(0),
                 ),
                 NavigationButton(
                   isSelected: _selectedIndex == 1,
+                  color: const Color.fromARGB(255, 21, 39, 202),
                   iconPath: "assets/icons/downloaded-generated.svg",
                   label: 'Generated Images',
                   onPressed: () => _onItemTapped(1),

@@ -21,7 +21,8 @@ class NavigationButton extends StatelessWidget {
   final void Function()? onPressed;
   @override
   Widget build(BuildContext context) {
-    Color activeColor = Colors.blue; // Selected item color
+    Color activeColor =
+        const Color.fromARGB(255, 21, 39, 202); // Selected item color
     Color inactiveColor = Colors.grey; // Non-selected item color
     return MaterialButton(
       minWidth: screenWidth(context) * 0.097,
@@ -40,7 +41,7 @@ class NavigationButton extends StatelessWidget {
               fontWeight: FontWeight.w400,
               fontSize: screenHeight(context) * 0.013, //size_10
               height: 1.25,
-              color: color ?? gray_1,
+              color: isSelected ? color : gray_1,
             ),
           )
         ],
