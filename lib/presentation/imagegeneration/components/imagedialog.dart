@@ -18,6 +18,8 @@ class FullScreenImagePage extends StatefulWidget {
 }
 
 class _FullScreenImagePageState extends State<FullScreenImagePage> {
+  bool _isDownloading = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -37,6 +39,11 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
     String imageUrl = widget.imageUrl[currentPageIndex];
 
     try {
+      setState(() {
+        //set isDownloading to true
+        _isDownloading = true;
+      });
+
       // Get the application documents directory path
       var dir = await getApplicationDocumentsDirectory();
       String folderPath = '${dir.path}/svigdownloads';
@@ -50,7 +57,11 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
 
       // Use Dio to download the image to the svigdownloads folder
       Dio dio = Dio();
-      await dio.download(imageUrl, '$folderPath/image_$uuid.jpg');
+      await dio.download(imageUrl, '$folderPath/image_$uuid.jpg').then((value) {
+        setState(() {
+          _isDownloading = false;
+        });
+      });
 
       // Check if the widget is still mounted before updating the UI
       if (mounted) {
@@ -78,6 +89,13 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          _isDownloading
+              ? const SizedBox(
+                  width: 24,
+                  height: 25,
+                  child: LinearProgressIndicator(),
+                )
+              : const SizedBox.shrink(),
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: _saveImage, // Save button

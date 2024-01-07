@@ -196,7 +196,7 @@ class _ImageGenerateState extends State<ImageGenerate> {
       } catch (e) {
         setState(() {
           _error =
-              "Please wait 1 min because of the rate limit of OpenAPI I can only generate 1-3 image per min";
+              "Please wait 1 min because of the rate limit or Check API keys";
         });
       }
     }
