@@ -126,7 +126,7 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
               });
             },
             itemBuilder: (context, index) {
-              return Image.network(widget.imageUrl[index], fit: BoxFit.contain);
+              return _buildImageWithLoader(index);
             },
           ),
           // Left arrow
@@ -144,7 +144,7 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
             //Previous button
             left: 10,
             child: IconButton(
-              icon: const Icon(Icons.arrow_left, color: Colors.white),
+              icon: const Icon(Icons.arrow_left, color: Colors.black),
               onPressed: () {
                 if (pageController.hasClients && pageController.page! > 0) {
                   pageController.previousPage(
@@ -158,7 +158,7 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
           Positioned(
             right: 10,
             child: IconButton(
-              icon: const Icon(Icons.arrow_right, color: Colors.white),
+              icon: const Icon(Icons.arrow_right, color: Colors.black),
               onPressed: () {
                 if (pageController.hasClients &&
                     pageController.page! < widget.imageUrl.length - 1) {
@@ -171,6 +171,39 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImageWithLoader(int index) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        Image.network(
+          widget.imageUrl[index],
+          fit: BoxFit.contain,
+          loadingBuilder: (BuildContext context, Widget child,
+              ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: SizedBox(
+                height: 75,
+                width: 75,
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(
+              child: Text('Error loading image'), // Error handling
+            );
+          },
+        ),
+      ],
     );
   }
 }
