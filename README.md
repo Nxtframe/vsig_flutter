@@ -2,7 +2,7 @@
 
 Hello Welcome to the project 
 
-Coded this in less than 12 hours
+Coded this in less than 8 hours from scratch
 
 ## Getting Started
 
