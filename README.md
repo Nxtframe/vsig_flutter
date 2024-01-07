@@ -13,6 +13,8 @@ e.g
 openaiApiKey=#########
 ```
 
+Then flutter get, then flutter run android.
+
 Make sure you have some openai token there kudos!,
 P.S if you have a good openAI account with some money in there you can go to generateimageprovider.dart and change the model from there.
 
