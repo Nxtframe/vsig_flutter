@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rive/rive.dart';
+import 'package:vsig_flutter/constants/colors.dart';
 import 'package:vsig_flutter/presentation/imagegeneration/components/imagedialog.dart';
 import 'package:vsig_flutter/state/generateimageprovider.dart';
 import 'package:vsig_flutter/utils/responsivetextstyle.dart';
@@ -13,8 +15,7 @@ class ImageGenerate extends StatefulWidget {
 
 class _ImageGenerateState extends State<ImageGenerate> {
   bool _isLoading = false; // Loading state
-  final TextEditingController _textController =
-      TextEditingController(); //Prompt
+  final TextEditingController textController = TextEditingController(); //Prompt
   String _error = "";
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Form key
   int _selectedNumber = 1; // No of images to generate
@@ -22,9 +23,9 @@ class _ImageGenerateState extends State<ImageGenerate> {
   Widget build(BuildContext context) {
     final responsivetextstyle = ResponsiveTextStyle(context);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 95, 217, 255),
+      backgroundColor: appbackgroundcolor,
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
           _error != ""
@@ -38,12 +39,18 @@ class _ImageGenerateState extends State<ImageGenerate> {
                   ),
                 )
               : const SizedBox.shrink(),
+          const Center(
+            child: SizedBox(
+                height: 200,
+                width: 200,
+                child: RiveAnimation.asset("assets/animations/cat.riv")),
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey, // Associate the form key
               child: TextFormField(
-                controller: _textController,
+                controller: textController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an image prompt';
@@ -149,16 +156,18 @@ class _ImageGenerateState extends State<ImageGenerate> {
     if (_formKey.currentState!.validate()) {
       // If the form is valid, proceed to generate the image
       final generateimageprovider = context.read<GenerateImageProvider>();
+      FocusScope.of(context).unfocus();
       setState(() {
         _isLoading = true; // Start loading
         _error = "";
       });
       try {
-        final generatedimageurls = await generateimageprovider
+        await generateimageprovider
             .generateimage(
-                prompt: _textController.text,
+                prompt: textController.text,
                 numberofimages: _selectedNumber,
-                sizes: "1080x1980")
+                sizes:
+                    "1024x1024") //I specified the image size here because I dont have the correct idea to let the user pick the sizes
             .then((value) => showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -167,11 +176,19 @@ class _ImageGenerateState extends State<ImageGenerate> {
                 ))
             .whenComplete(() {
           setState(() {
+            FocusScope.of(context).unfocus();
+            textController.clear();
             _isLoading = false; // Stop loading after completion
           });
         });
 
-        // Your existing logic to show the image
+        // showDialog(
+        //   context: context,
+        //   builder: (context) => const FullScreenImagePage(imageUrl: [
+        //     "https://v3img.voot.com/resizeMedium,w_1090,h_613/jioimage/newcpp/64a6e15eabc7b2fcd7f056ed/64a6e15eabc7b2fcd7f056ed_1688658920347_aa.jpg"
+        //   ]),
+        // );
+        // Test without using api
       } catch (e) {
         setState(() {
           _error =
@@ -186,7 +203,7 @@ class _ImageGenerateState extends State<ImageGenerate> {
 
   @override
   void dispose() {
-    _textController.dispose();
+    textController.dispose();
     super.dispose();
   }
 }

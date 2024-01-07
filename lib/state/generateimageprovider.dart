@@ -17,10 +17,7 @@ class GenerateImageProvider extends ChangeNotifier {
     final openaiimageapi =
         VsigClient.instance.client.getService<OpenAIImageService>();
     final ImageGenerationRequest imagerequest = ImageGenerationRequest(
-        model: "dall-e-2",
-        n: numberofimages,
-        prompt: prompt,
-        size: "1024x1024");
+        model: "dall-e-2", n: numberofimages, prompt: prompt, size: sizes);
 
     try {
       final imageresponse = await openaiimageapi.generateImage(imagerequest);

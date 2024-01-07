@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vsig_flutter/constants/colors.dart';
 import 'package:vsig_flutter/presentation/bottomnavigation/components/navigation_button.dart';
 import 'package:vsig_flutter/presentation/imagegeneration/generateimage.dart';
 import 'package:vsig_flutter/presentation/savedimages/savedimages.dart';
@@ -30,8 +31,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
     final responsivetextstyle = ResponsiveTextStyle(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            _selectedIndex == 0 ? 'Image Generation' : "Generated Images",
+        backgroundColor: appbackgroundcolor,
+        title: Text(_selectedIndex == 0 ? 'Image Generation' : "Saved Images",
             style:
                 responsivetextstyle.getCustomTextStyle(color: Colors.black38)),
       ),
@@ -53,7 +54,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   isSelected: _selectedIndex == 1,
                   color: const Color.fromARGB(255, 21, 39, 202),
                   iconPath: "assets/icons/downloaded-generated.svg",
-                  label: 'Generated Images',
+                  label: 'Saved Images',
                   onPressed: () => _onItemTapped(1),
                 ),
               ],
