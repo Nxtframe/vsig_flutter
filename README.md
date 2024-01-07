@@ -13,7 +13,8 @@ e.g
 openaiApiKey=#########
 ```
 
-Make sure you have some token there kudos!
+Make sure you have some openai token there kudos!,
+P.S if you have a good openAI account with some money in there you can go to generateimageprovider.dart and change the model from there.
 
 #How to Run the file
 Some image of the app
