@@ -25,7 +25,7 @@ class _SavedImagesState extends State<SavedImages> {
     final dir = await getApplicationDocumentsDirectory();
     final imageDirectory = Directory('${dir.path}/svigdownloads');
 
-    // Create the directory if it doesn't exist
+    // Create the directory already if it doesn't exist
     if (!await imageDirectory.exists()) {
       await imageDirectory.create(recursive: true);
     }
@@ -58,38 +58,47 @@ class _SavedImagesState extends State<SavedImages> {
     );
   }
 
+  Future<void> _refreshImages() async {
+    //WHen pulled down and refreshed
+    await _loadImages();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 4.0,
-            mainAxisSpacing: 4.0,
-          ),
-          itemCount: savedImages.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedImageIndex = index; // Update the selected image index
-                  _showImageDialog(savedImages[index]);
-                });
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  border: selectedImageIndex == index
-                      ? Border.all(
-                          color: Colors.blue,
-                          width: 3) // Highlight selected image
-                      : null,
+        child: RefreshIndicator(
+          onRefresh: _refreshImages,
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 4.0,
+              mainAxisSpacing: 4.0,
+            ),
+            itemCount: savedImages.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedImageIndex =
+                        index; // Update the selected image index
+                    _showImageDialog(savedImages[index]);
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: selectedImageIndex == index
+                        ? Border.all(
+                            color: Colors.blue,
+                            width: 3) // Highlight selected image
+                        : null,
+                  ),
+                  child: Image.file(savedImages[index], fit: BoxFit.cover),
                 ),
-                child: Image.file(savedImages[index], fit: BoxFit.cover),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

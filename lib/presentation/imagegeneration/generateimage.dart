@@ -168,16 +168,20 @@ class _ImageGenerateState extends State<ImageGenerate> {
                 numberofimages: _selectedNumber,
                 sizes:
                     "1024x1024") //I specified the image size here because I dont have the correct idea to let the user pick the sizes
-            .then((value) => showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return FullScreenImagePage(imageUrl: value);
-                  },
-                ))
-            .whenComplete(() {
+            .then((value) {
+          setState(() {
+            textController.clear();
+          });
+
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return FullScreenImagePage(imageUrl: value);
+            },
+          );
+        }).whenComplete(() {
           setState(() {
             FocusScope.of(context).unfocus();
-            textController.clear();
             _isLoading = false; // Stop loading after completion
           });
         });
