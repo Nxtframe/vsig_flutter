@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:chopper/chopper.dart';
 import 'package:vsig_flutter/models/error/error_response.dart';
 import 'package:vsig_flutter/network/header_interceptor.dart';
+import 'package:vsig_flutter/network/network_services.dart/openai_image_generation_service.dart';
 
 class VsigClient {
   static final VsigClient instance = VsigClient._();
@@ -13,7 +14,7 @@ class VsigClient {
   VsigClient._() {
     client = ChopperClient(
         baseUrl: Uri.parse('https://api.openai.com/v1/'),
-        services: [],
+        services: [OpenAIImageService.create()],
         converter: const JsonConverter(),
         interceptors: [
           HeaderInterceptor(apikey)
