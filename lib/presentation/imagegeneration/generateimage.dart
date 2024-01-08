@@ -200,9 +200,6 @@ class _ImageGenerateState extends State<ImageGenerate> {
         });
       }
     }
-
-    // Here you would typically have your logic to generate an image based on the text.
-    // For demonstration, let's just use a sample image URL.
   }
 
   @override

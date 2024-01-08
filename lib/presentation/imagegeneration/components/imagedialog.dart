@@ -189,6 +189,7 @@ class _FullScreenImagePageState extends State<FullScreenImagePage> {
                 height: 75,
                 width: 75,
                 child: CircularProgressIndicator(
+                  //Show progress indicator of image loading
                   value: loadingProgress.expectedTotalBytes != null
                       ? loadingProgress.cumulativeBytesLoaded /
                           loadingProgress.expectedTotalBytes!
